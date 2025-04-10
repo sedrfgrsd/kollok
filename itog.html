@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>🔥 Коллоквиум-Мастер: Органическая химия</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #f8f9fa; padding: 20px; color: #212529; }
+    h1 { color: #c0392b; }
+    .question { margin: 20px 0; padding: 15px; background: #fff; border-left: 5px solid #c0392b; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+    .options label { display: block; margin: 5px 0; }
+    .section-title { margin-top: 40px; font-size: 1.5em; border-bottom: 2px solid #c0392b; padding-bottom: 5px; }
+    .note { font-size: 0.9em; color: #6c757d; }
+    #result { font-weight: bold; font-size: 1.2em; margin-top: 30px; }
+    .explanation { margin-top: 10px; padding: 10px; background: #e9ecef; border-left: 4px solid #c0392b; }
+    .correct { color: green; font-weight: bold; }
+    .wrong { color: red; font-weight: bold; }
+    button { background: #c0392b; color: white; border: none; padding: 10px 20px; font-size: 1em; border-radius: 5px; cursor: pointer; }
+  </style>
+</head>
+<body>
+
+<h1>🔥 Коллоквиум-Мастер: Органическая химия</h1>
+<p><strong>Каждая сессия — случайные 10 вопросов</strong> из полного набора. Удачи!</p>
+
+<div id="quiz"></div>
+
+<button onclick="checkAnswers()">Проверить ответы</button>
+<p id="result"></p>
+
+<script>
+const questions = [
+  {
+    id: "q1",
+    question: "Какая реакция описывает окислительное дегидрирование метанола до формальдегида?",
+    options: ["CH3OH → CH2O + H2", "CH3OH + O2 → HCOOH + H2O", "CH3OH + 0.5O2 → CH2O + H2O", "CH2O → CO + H2"],
+    answer: "CH3OH + 0.5O2 → CH2O + H2O",
+    explanation: "Окислительное дегидрирование метанола идёт с участием кислорода и образованием формальдегида и воды."
+  },
+  {
+    id: "q2",
+    question: "При какой температуре равновесный выход формальдегида по реакции дегидрирования превышает 98%?",
+    options: ["500 °C", "627 °C", "400 °C", "250 °C"],
+    answer: "627 °C",
+    explanation: "Максимальный выход формальдегида достигается при температуре около 627 °C, что соответствует пику графика."
+  },
+  {
+    id: "q3",
+    question: "Какой металл используется в промышленности как катализатор для окислительного дегидрирования метанола?",
+    options: ["Медь", "Золото", "Серебро", "Железо"],
+    answer: "Серебро",
+    explanation: "Серебро обеспечивает высокую селективность и устойчиво к глубокой каталитической окиси."
+  },
+  {
+    id: "q5",
+    question: "Почему в формалин добавляют метанол?",
+    options: ["Для повышения температуры кипения", "Для стабилизации от полимеризации", "Для увеличения растворимости в воде", "Для ускорения реакции"],
+    answer: "Для стабилизации от полимеризации",
+    explanation: "Метанол препятствует полимеризации формальдегида при хранении."
+  },
+  {
+    id: "q6",
+    question: "Какой тип зависимости показывает график равновесного выхода формальдегида от температуры?",
+    options: ["Убывающий", "Линейно возрастающий", "С насыщением при высоких температурах", "Пилообразный"],
+    answer: "С насыщением при высоких температурах",
+    explanation: "Выход формальдегида растёт с температурой, но достигает плато."
+  },
+  {
+    id: "q7",
+    question: "Что является лимитирующей стадией в условиях внешнедиффузионной области?",
+    options: ["Внутренняя диффузия", "Химическая реакция", "Внешняя диффузия", "Каталитическая рекомбинация"],
+    answer: "Внешняя диффузия",
+    explanation: "На внешней диффузии тормозится подача реагентов к активной поверхности катализатора."
+  },
+  {
+    id: "q8",
+    question: "Какой механизм включает стадии дегидрирования, конденсации и дегидратации при получении бутадиена?",
+    options: ["Спонтанное расщепление", "Пиролиз с деструкцией", "Многостадийный гетерогенно-каталитический процесс", "Одностадийный гидролиз"],
+    answer: "Многостадийный гетерогенно-каталитический процесс",
+    explanation: "Процесс Лебедева включает несколько стадий на твёрдом катализаторе."
+  }
+];
+
+function shuffle(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
+}
+
+function loadQuiz() {
+  const quiz = document.getElementById("quiz");
+  quiz.innerHTML = "";
+  const shuffled = shuffle([...questions]).slice(0, 10);
+  shuffled.forEach(q => {
+    const block = document.createElement("div");
+    block.className = "question";
+    const title = document.createElement("strong");
+    title.innerText = q.question;
+    block.appendChild(title);
+    const optionsDiv = document.createElement("div");
+    optionsDiv.className = "options";
+    q.options.forEach(opt => {
+      const label = document.createElement("label");
+      label.innerHTML = `<input type="radio" name="${q.id}" value="${opt}"> ${opt}`;
+      optionsDiv.appendChild(label);
+    });
+    block.appendChild(optionsDiv);
+    const explanation = document.createElement("div");
+    explanation.className = "explanation";
+    explanation.style.display = "none";
+    explanation.id = `explanation-${q.id}`;
+    block.appendChild(explanation);
+    quiz.appendChild(block);
+  });
+}
+
+function checkAnswers() {
+  let correct = 0;
+  const allIds = Array.from(document.querySelectorAll("input[type='radio']"))
+    .map(i => i.name);
+  const uniqueIds = [...new Set(allIds)];
+
+  uniqueIds.forEach(qid => {
+    const q = questions.find(item => item.id === qid);
+    const selected = document.querySelector(`input[name='${qid}']:checked`);
+    const explanationDiv = document.getElementById(`explanation-${qid}`);
+    if (selected) {
+      if (selected.value === q.answer) {
+        correct++;
+      } else {
+        explanationDiv.innerHTML = `<span class='wrong'>Неверно.</span> Правильный ответ: <span class='correct'>${q.answer}</span><br>${q.explanation}`;
+        explanationDiv.style.display = "block";
+      }
+    } else {
+      explanationDiv.innerHTML = `<span class='wrong'>Нет ответа.</span> Правильный ответ: <span class='correct'>${q.answer}</span><br>${q.explanation}`;
+      explanationDiv.style.display = "block";
+    }
+  });
+
+  const score = Math.round((correct / uniqueIds.length) * 100);
+  document.getElementById("result").innerText = `Ты ответила правильно на ${correct} из ${uniqueIds.length} вопросов. Оценка: ${score}/100.`;
+}
+
+window.onload = loadQuiz;
+</script>
+
+<p class="note">Каждый раз — новая подборка! Готовься, проходи и побеждай 🔥</p>
+
+</body>
+</html>
